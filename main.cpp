@@ -26,7 +26,7 @@ void ReadCSV(std::string filename, std::vector<RowVector*>& data)
 	uint cols = parsed_vec.size();
 	data.push_back(new RowVector(cols));
 	for (uint i = 0; i < cols; i++) {
-		data.back()->coeffRef(1, i) = parsed_vec[i];
+		data.back()->coeffRef(i) = parsed_vec[i];
 	}
 
 	// read the file
@@ -45,15 +45,23 @@ void ReadCSV(std::string filename, std::vector<RowVector*>& data)
 
 
 //... data generator code here
-void genData(std::string filename)
+void genData(std::string filename, uint feat_len)
 {
 	std::ofstream file1(filename + "-in");
 	std::ofstream file2(filename + "-out");
 	for (uint r = 0; r < 1000; r++) {
-		Scalar x = rand() / Scalar(RAND_MAX);
-		Scalar y = rand() / Scalar(RAND_MAX);
-		file1 << x << "," << y << std::endl;
-		file2 << 2 * x + 10 + y << std::endl;
+		Scalar y = 10;
+		for (int i = 0; i < feat_len; i++) {
+			Scalar feat_i = rand() / Scalar(RAND_MAX);
+			if (i != feat_len - 1) {
+				file1 << feat_i << ",";
+			} else {
+				file1 << feat_i << std::endl;
+			}
+			y += 8 * feat_i;
+		}
+		// suppose the distribution is y = x1 + x1 + x2 + 10
+		file2 << y << std::endl;
 	}
 	file1.close();
 	file2.close();
@@ -64,13 +72,13 @@ typedef std::vector<RowVector*> data;
 int main()
 {
 	std::vector<uint> topology;
-	topology.push_back(2);
+	topology.push_back(12);
 	topology.push_back(128);
 	topology.push_back(64);
 	topology.push_back(1);
     NeuralNetwork n(topology);
 	data in_dat, out_dat;
-	genData("an");
+	genData("an", 12);
 	ReadCSV("an-in", in_dat);
 	ReadCSV("an-out", out_dat);
 	n.train(in_dat, out_dat);
