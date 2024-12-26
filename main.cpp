@@ -65,7 +65,8 @@ int main()
 {
 	std::vector<uint> topology;
 	topology.push_back(2);
-	topology.push_back(3);
+	topology.push_back(128);
+	topology.push_back(64);
 	topology.push_back(1);
     NeuralNetwork n(topology);
 	data in_dat, out_dat;
