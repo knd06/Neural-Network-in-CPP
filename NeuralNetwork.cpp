@@ -110,21 +110,23 @@ void NeuralNetwork::updateWeights()
 }
 
 
-void NeuralNetwork::propagateBackward(RowVector& output)
+void NeuralNetwork::propagateBackward(RowVector& output, bool update_now)
 {
 	calcErrors(output);
-	updateWeights();
+	if (update_now) updateWeights();
 }
 
 
-void NeuralNetwork::train(std::vector<RowVector*> input_data, std::vector<RowVector*> output_data)
+void NeuralNetwork::train(std::vector<RowVector*> input_data, std::vector<RowVector*> output_data, uint batch_size)
 {
+	bool update_now = false;
 	for (uint i = 1; i < input_data.size(); i++) {
+		update_now = (i % batch_size == 0);
 		std::cout << "Input to neural network is : " << *input_data[i] << std::endl;
 		propagateForward(*input_data[i]);
 		std::cout << "Expected output is : " << *output_data[i] << std::endl;
 		std::cout << "Output produced is : " << *neuronLayers.back() << std::endl;
-		propagateBackward(*output_data[i]);
+		propagateBackward(*output_data[i], update_now);
 		std::cout << "MSE : " << std::sqrt((*deltas.back()).dot((*deltas.back())) / deltas.back()->size()) << std::endl;
 	}
 }

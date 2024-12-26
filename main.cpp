@@ -49,7 +49,7 @@ void genData(std::string filename, uint feat_len)
 {
 	std::ofstream file1(filename + "-in");
 	std::ofstream file2(filename + "-out");
-	for (uint r = 0; r < 1000; r++) {
+	for (uint r = 0; r < 100000; r++) {
 		Scalar y = 10;
 		for (int i = 0; i < feat_len; i++) {
 			Scalar feat_i = rand() / Scalar(RAND_MAX);
@@ -71,6 +71,7 @@ void genData(std::string filename, uint feat_len)
 typedef std::vector<RowVector*> data;
 int main()
 {
+	uint batch_size = 5;
 	std::vector<uint> topology;
 	topology.push_back(12);
 	topology.push_back(128);
@@ -81,6 +82,6 @@ int main()
 	genData("an", 12);
 	ReadCSV("an-in", in_dat);
 	ReadCSV("an-out", out_dat);
-	n.train(in_dat, out_dat);
+	n.train(in_dat, out_dat, batch_size);
 	return 0;
 }
